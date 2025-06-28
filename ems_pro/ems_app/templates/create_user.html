@@ -1,0 +1,314 @@
+<!-- templates/create_user.html -->
+{% extends 'base.html' %}
+{% block title %}Create User{% endblock %}
+{% block page_title %}Create User{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Create New User</h1>
+            <p class="text-blue-200/80">Add a new user to the system</p>
+        </div>
+        
+        <!-- Back Button -->
+        <a href="/user-page/" class="group flex items-center px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-slate-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-slate-400/40 hover:from-slate-500 hover:to-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400/50">
+            <svg class="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to User List
+        </a>
+    </div>
+
+    <!-- Create User Form -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <!-- Glassmorphism effect -->
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <!-- Form Header -->
+            <div class="px-8 py-6 border-b border-blue-500/20">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    User Information
+                </h2>
+                <p class="text-blue-200/60 mt-1">Fill in the details for the new user account</p>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-8">
+                <form id="createUserForm" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Username Field -->
+                        <div class="space-y-2">
+                            <label for="username" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Username
+                            </label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                required
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                placeholder="Enter username"
+                            >
+                        </div>
+
+                        <!-- User ID Field -->
+                        <div class="space-y-2">
+                            <label for="user_id" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.829 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                                </svg>
+                                User ID
+                            </label>
+                            <input 
+                                type="text" 
+                                id="user_id" 
+                                name="user_id" 
+                                required
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                placeholder="Enter user ID"
+                            >
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="space-y-2">
+                            <label for="password" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                Password
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    required
+                                    class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 pr-12"
+                                    placeholder="Enter password"
+                                >
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword()"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-blue-200 transition-colors duration-300"
+                                >
+                                    <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Role Field -->
+                        <div class="space-y-2">
+                            <label for="role" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                Role
+                            </label>
+                            <select 
+                                id="role" 
+                                name="role" 
+                                required
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                            >
+                                <option value="" class="bg-slate-800 text-gray-300">Select a role</option>
+                                <option value="admin" class="bg-slate-800 text-purple-300">Admin</option>
+                                <option value="controller" class="bg-slate-800 text-green-300">Controller</option>
+                                <option value="manager" class="bg-slate-800 text-blue-300">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error" class="hidden">
+                        <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 rounded-xl text-red-300">
+                            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="errorMessage">Error creating user. Please try again.</span>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="success" class="hidden">
+                        <div class="flex items-center p-4 bg-green-600/20 border border-green-500/30 rounded-xl text-green-300">
+                            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>User created successfully! Redirecting...</span>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-4 pt-6 border-t border-blue-500/20">
+                        <button 
+                            type="button" 
+                            onclick="resetForm()"
+                            class="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105 border border-slate-500/30 hover:border-slate-400/50"
+                        >
+                            Reset Form
+                        </button>
+                        <button 
+                            type="submit" 
+                            id="submitBtn"
+                            class="group flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50"
+                        >
+                            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span id="submitText">Create User</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Use window.authToken instead of localStorage for token storage
+    const token = window.authToken || localStorage.getItem('token');
+    console.log('Token:', token);
+
+    // Toggle password visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878l.636.636m4.242 4.242l-4.242-4.242m4.242 4.242L16.464 16.464m-6.586-6.586L8.464 8.464M8.464 8.464L6.465 6.465M8.464 8.464l.636.636"></path>
+            `;
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            `;
+        }
+    }
+
+    // Reset form
+    function resetForm() {
+        document.getElementById('createUserForm').reset();
+        document.getElementById('error').classList.add('hidden');
+        document.getElementById('success').classList.add('hidden');
+    }
+
+    // Show loading state
+    function setLoading(isLoading) {
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        
+        if (isLoading) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitText.textContent = 'Creating...';
+            submitBtn.querySelector('svg').classList.add('animate-spin');
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitText.textContent = 'Create User';
+            submitBtn.querySelector('svg').classList.remove('animate-spin');
+        }
+    }
+
+    // Create user
+    document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const user_id = document.getElementById('user_id').value.trim();
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
+    
+    // Hide previous messages
+    document.getElementById('error').classList.add('hidden');
+    document.getElementById('success').classList.add('hidden');
+    
+    // Basic validation
+    if (!username || !user_id || !password || !role) {
+        document.getElementById('errorMessage').textContent = 'Please fill in all required fields.';
+        document.getElementById('error').classList.remove('hidden');
+        return;
+    }
+    
+    if (password.length < 6) {
+        document.getElementById('errorMessage').textContent = 'Password must be at least 6 characters long.';
+        document.getElementById('error').classList.remove('hidden');
+        return;
+    }
+    
+    setLoading(true);
+    
+    try {
+        const response = await fetch('/users/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken // Add CSRF token to headers
+            },
+            body: JSON.stringify({ username, user_id, password, role })
+        });
+        
+        console.log('Create User Response:', response.status, response.statusText);
+        
+        if (response.ok) {
+            document.getElementById('success').classList.remove('hidden');
+            document.getElementById('createUserForm').reset();
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = '/user-page/';
+            }, 1500);
+        } else {
+            const errorData = await response.json();
+            console.error('Create User Error:', errorData);
+            
+            let errorMessage = 'Error creating user. Please try again.';
+            if (errorData.detail) {
+                errorMessage = errorData.detail;
+            } else if (errorData.message) {
+                errorMessage = errorData.message;
+            }
+            
+            document.getElementById('errorMessage').textContent = errorMessage;
+            document.getElementById('error').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Create User Exception:', error);
+        document.getElementById('errorMessage').textContent = 'Network error. Please check your connection and try again.';
+        document.getElementById('error').classList.remove('hidden');
+    } finally {
+        setLoading(false);
+    }
+});
+
+    // Auto-generate user ID based on username (optional feature)
+    document.getElementById('username').addEventListener('input', function(e) {
+        const username = e.target.value.trim();
+        const userIdField = document.getElementById('user_id');
+        
+        // Only auto-generate if user_id field is empty
+        if (!userIdField.value && username) {
+            // Generate a simple user ID (you can customize this logic)
+            const timestamp = Date.now().toString().slice(-4);
+            userIdField.value = `${username.toLowerCase()}_${timestamp}`;
+        }
+    });
+</script>
+{% endblock %}

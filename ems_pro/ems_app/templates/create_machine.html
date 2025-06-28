@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% block title %}Create Machine - EMS{% endblock %}
+{% block page_title %}Create New Machine{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Form Container -->
+    
+        <form id="machine-form" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="flex justify-between items-center mb-8">
+    <div>
+        <p class="text-blue-200/80">Create and configure new machines for energy monitoring</p>
+    </div>
+    
+    <!-- Back Button -->
+    <a href="{% url 'config_page' %}" class="group flex items-center px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-slate-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-slate-400/40 hover:from-slate-500 hover:to-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400/50">
+        <svg class="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Config
+    </a>
+</div>
+            <!-- Basic Information Section -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center">
+                        <i class="fas fa-info-circle text-white text-sm"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Basic Information</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Machine Name -->
+                    <div class="space-y-3">
+                        <label for="name" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                            <i class="fas fa-tag text-emerald-400"></i>
+                            <span>Machine Name *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" 
+                                   name="name" 
+                                   id="name" 
+                                   required 
+                                   placeholder="e.g., Generator Unit 01"
+                                   class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300">
+                            <div class="absolute inset-y-0 right-4 flex items-center">
+                                <i class="fas fa-check text-emerald-400 opacity-0 transition-opacity duration-300" id="name-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="space-y-3">
+                        <label for="location" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                            <i class="fas fa-map-marker-alt text-blue-400"></i>
+                            <span>Location *</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" 
+                                   name="location" 
+                                   id="location" 
+                                   required 
+                                   placeholder="e.g., Building A - Floor 2"
+                                   class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300">
+                            <div class="absolute inset-y-0 right-4 flex items-center">
+                                <i class="fas fa-check text-blue-400 opacity-0 transition-opacity duration-300" id="location-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="space-y-3">
+                    <label for="description" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                        <i class="fas fa-file-alt text-purple-400"></i>
+                        <span>Description</span>
+                    </label>
+                    <textarea name="description" 
+                              id="description" 
+                              rows="4"
+                              placeholder="Enter detailed description of the machine, its purpose, and specifications..."
+                              class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Technical Specifications Section -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Technical Specifications</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Current -->
+                    <div class="space-y-3">
+                        <label for="current_tag" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                            <i class="fas fa-wave-square text-orange-400"></i>
+                            <span>Current (A)</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   name="current_tag" 
+                                   id="current_tag" 
+                                   min="0"
+                                   placeholder="0"
+                                   class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all duration-300">
+                            <div class="absolute inset-y-0 right-4 flex items-center">
+                                <span class="text-slate-500 text-sm">A</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Voltage -->
+                    <div class="space-y-3">
+                        <label for="voltage_tag" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                            <i class="fas fa-zap text-yellow-400"></i>
+                            <span>Voltage (V)</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   name="voltage_tag" 
+                                   id="voltage_tag" 
+                                   min="0"
+                                   placeholder="0"
+                                   class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-300">
+                            <div class="absolute inset-y-0 right-4 flex items-center">
+                                <span class="text-slate-500 text-sm">V</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Power Consumption -->
+                    <div class="space-y-3">
+                        <label for="kwh_tag" class="flex items-center space-x-2 text-sm font-semibold text-slate-300">
+                            <i class="fas fa-bolt text-green-400"></i>
+                            <span>Power (kWh)</span>
+                        </label>
+                        <div class="relative">
+                            <input type="number" 
+                                   name="kwh_tag" 
+                                   id="kwh_tag" 
+                                   min="0"
+                                   placeholder="0"
+                                   class="w-full px-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300">
+                            <div class="absolute inset-y-0 right-4 flex items-center">
+                                <span class="text-slate-500 text-sm">kWh</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <!-- Form Actions -->
+<div class="flex justify-end pt-8 border-t border-slate-700/50">
+    <button type="submit" 
+            id="submit-btn"
+            class="group flex items-center px-8 py-3 bg-gradient-to-r from-emerald-600 to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-400/40 hover:from-emerald-500 hover:to-blue-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/50 disabled:opacity-50 disabled:cursor-not-allowed">
+        <svg class="w-5 h-5 mr-2 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        <span id="submit-text">Create Machine</span>
+        <div class="hidden ml-3" id="submit-spinner">
+            <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        </div>
+    </button>
+</div>
+        </form>
+
+</div>
+
+<style>
+    /* Custom animations and effects */
+    .form-input-focus {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+    }
+    
+    .validation-success {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+    }
+    
+    .validation-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .form-section {
+        animation: slideInUp 0.6s ease-out;
+    }
+</style>
+
+<script>
+    // Form validation and interaction
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('machine-form');
+        const nameInput = document.getElementById('name');
+        const locationInput = document.getElementById('location');
+        const currentInput = document.getElementById('current_tag');
+        const voltageInput = document.getElementById('voltage_tag');
+        const kwhInput = document.getElementById('kwh_tag');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = document.getElementById('submit-text');
+        const submitSpinner = document.getElementById('submit-spinner');
+
+        // Real-time validation
+        function validateInput(input, checkIcon) {
+            if (input.value.trim()) {
+                input.classList.add('validation-success');
+                input.classList.remove('validation-error');
+                if (checkIcon) checkIcon.style.opacity = '1';
+                return true;
+            } else {
+                input.classList.remove('validation-success');
+                if (input.hasAttribute('required')) {
+                    input.classList.add('validation-error');
+                }
+                if (checkIcon) checkIcon.style.opacity = '0';
+                return false;
+            }
+        }
+
+        // Input event listeners
+        nameInput.addEventListener('input', () => validateInput(nameInput, document.getElementById('name-check')));
+        locationInput.addEventListener('input', () => validateInput(locationInput, document.getElementById('location-check')));
+
+        // Focus effects
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.add('form-input-focus');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.classList.remove('form-input-focus');
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Validate required fields
+            const nameValid = validateInput(nameInput, document.getElementById('name-check'));
+            const locationValid = validateInput(locationInput, document.getElementById('location-check'));
+            
+            if (!nameValid || !locationValid) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'Creating...';
+            submitSpinner.classList.remove('hidden');
+
+            const data = {
+                name: nameInput.value,
+                location: locationInput.value,
+                description: document.getElementById('description').value || null,
+                current_tag: parseInt(currentInput.value) || null,
+                voltage_tag: parseInt(voltageInput.value) || null,
+                kwh_tag: parseInt(kwhInput.value) || null
+            };
+
+            fetch('/machines/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showToast('Machine created successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/config/';
+                    }, 1500);
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Failed to create machine');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error creating machine:', error);
+                showToast(error.message || 'Failed to create machine', 'error');
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = 'Create Machine';
+                submitSpinner.classList.add('hidden');
+            });
+        });
+    });
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        const icon = type === 'success' ? 'fa-check' : type === 'error' ? 'fa-times' : 'fa-info';
+        
+        toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-4 rounded-2xl shadow-lg z-50 transform translate-x-full transition-all duration-300`;
+        toast.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <i class="fas ${icon}"></i>
+                <span class="font-medium">${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Slide in
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Slide out and remove
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, 4000);
+    }
+</script>
+{% endblock %}

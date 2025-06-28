@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% block title %}Tariff Management{% endblock %}
+{% block page_title %}Tariff Management{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+            <p class="text-blue-200/80">Set tariff rates and view machine tariff calculations</p>
+        </div>
+        <!-- Export Button -->
+        <button id="exportBtn" class="group flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-400/40 hover:from-emerald-500 hover:to-green-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/50">
+            <svg class="w-5 h-5 mr-2 transition-transform group-hover:-rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Export Tariff Report
+        </button>
+    </div>
+
+    <!-- Tariff Rate Input Section -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        <div class="relative z-10 p-6">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25 mr-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-semibold text-white">Set Tariff Rate</h2>
+            </div>
+            <form id="tariff-form" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="tariff_rate" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">Tariff Rate (per kWh)</label>
+                        <input type="number" id="tariff_rate" name="tariff_rate" step="0.01" min="0" placeholder="Enter tariff rate" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="group flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50">
+                        <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        Set Tariff Rate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        <div class="relative z-10 p-6">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/25 mr-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-semibold text-white">Tariff Report Filters</h2>
+            </div>
+            <form id="report-form" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label for="machine" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">Machine</label>
+                        <select id="machine" name="machine" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300">
+                            <option value="">All Machines</option>
+                        </select>
+                    </div>
+                    <div class="lg:col-span-2 space-y-4">
+                        <label class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">Date Range Selection</label>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1 space-y-3">
+                                <div class="flex items-center p-3 bg-slate-700/30 rounded-xl border border-blue-500/20 transition-all duration-300 hover:bg-slate-600/30">
+                                    <input type="radio" id="predefined_range" name="date_type" value="predefined" class="w-4 h-4 text-blue-600 bg-slate-700 border-blue-400 focus:ring-blue-500 focus:ring-2" checked>
+                                    <label for="predefined_range" class="ml-3 text-white font-medium cursor-pointer">Predefined Ranges</label>
+                                </div>
+                                <div id="predefined_options" class="space-y-2">
+                                    <select id="date_filter" name="date_filter" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300">
+                                        <option value="">Select Date Filter</option>
+                                        <option value="last_week">Last Week</option>
+                                        <option value="last_month">Last Month</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-1 space-y-3">
+                                <div class="flex items-center p-3 bg-slate-700/30 rounded-xl border border-blue-500/20 transition-all duration-300 hover:bg-slate-600/30">
+                                    <input type="radio" id="custom_range" name="date_type" value="custom" class="w-4 h-4 text-blue-600 bg-slate-700 border-blue-400 focus:ring-blue-500 focus:ring-2">
+                                    <label for="custom_range" class="ml-3 text-white font-medium cursor-pointer">Custom Date Range</label>
+                                </div>
+                                <div id="custom_options" class="space-y-3 opacity-50">
+                                    <input type="date" id="start_date" name="start_date" placeholder="Start Date" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" disabled>
+                                    <input type="date" id="end_date" name="end_date" placeholder="End Date" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end pt-4 border-t border-blue-500/10">
+                    <button type="submit" class="group flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-400/40 hover:from-blue-500 hover:to-cyan-400 focus:outline-none focus:ring-4 focus:ring-blue-400/50">
+                        <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        Generate Tariff Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Total Tariff Cost Section -->
+    <div id="total-tariff-section" class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        <div class="relative z-10 p-6">
+            <h2 class="text-xl font-semibold text-white flex items-center mb-4">
+                <svg class="w-6 h-6 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Total Tariff Cost
+            </h2>
+            <div id="total-tariff-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="hidden flex justify-center items-center py-20">
+        <div class="relative">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-blue-500/20"></div>
+        </div>
+        <p class="text-blue-100 ml-4">Generating tariff report...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="text-center py-20">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-gray-600 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/25">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a4 4 0 01-4-4V5a4 4 0 014-4h10a4 4 0 014 4v14a4 4 0 01-4 4z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">No Data Available</h3>
+        <p class="text-blue-200/80">Configure your filters and generate a tariff report to view calculations.</p>
+    </div>
+
+    <!-- No Results State -->
+    <div id="noResultsState" class="hidden text-center py-20">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-yellow-600 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/25">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">No Records Found</h3>
+        <p class="text-blue-200/80">No tariff records match your selected criteria. Try adjusting your filters.</p>
+    </div>
+</div>
+
+<script>
+    const token = window.authToken || localStorage.getItem('token');
+
+    async function loadMachines() {
+        try {
+            const response = await fetch('/machines/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            const machines = data.machines || data;
+            if (!Array.isArray(machines)) {
+                throw new Error('Expected machines to be an array');
+            }
+            const machineSelect = document.getElementById('machine');
+            machines.forEach(machine => {
+                const option = document.createElement('option');
+                option.value = machine.id;
+                option.textContent = machine.name;
+                machineSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading machines:', error);
+        }
+    }
+
+    const predefinedRadio = document.getElementById('predefined_range');
+    const customRadio = document.getElementById('custom_range');
+    const predefinedOptions = document.getElementById('predefined_options');
+    const customOptions = document.getElementById('custom_options');
+    const dateFilter = document.getElementById('date_filter');
+    const startDate = document.getElementById('start_date');
+    const endDate = document.getElementById('end_date');
+
+    function updateDateOptions() {
+        if (predefinedRadio.checked) {
+            predefinedOptions.style.opacity = '1';
+            customOptions.style.opacity = '0.5';
+            dateFilter.disabled = false;
+            startDate.disabled = true;
+            endDate.disabled = true;
+            startDate.value = '';
+            endDate.value = '';
+        } else {
+            predefinedOptions.style.opacity = '0.5';
+            customOptions.style.opacity = '1';
+            dateFilter.disabled = true;
+            dateFilter.value = '';
+            startDate.disabled = false;
+            endDate.disabled = false;
+        }
+    }
+
+    predefinedRadio.addEventListener('change', updateDateOptions);
+    customRadio.addEventListener('change', updateDateOptions);
+    updateDateOptions();
+
+    function renderTotalTariff(totalTariff, machineId) {
+        const container = document.getElementById('total-tariff-container');
+        container.innerHTML = '';
+        if (machineId) {
+            const div = document.createElement('div');
+            div.className = 'p-4 bg-blue-600/20 rounded-lg border border-blue-500/30';
+            div.innerHTML = `
+                <p class="text-blue-100 text-sm uppercase tracking-wider">Selected Machine</p>
+                <p class="text-2xl font-bold text-white">${totalTariff !== null ? totalTariff.toFixed(2) : '0.00'}</p>
+            `;
+            container.className = 'grid grid-cols-1 gap-4';
+            container.appendChild(div);
+        } else {
+            container.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
+            for (const [machineName, tariff] of Object.entries(totalTariff)) {
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-blue-600/20 rounded-lg border border-blue-500/30';
+                div.innerHTML = `
+                    <p class="text-blue-100 text-sm uppercase tracking-wider">${machineName}</p>
+                    <p class="text-2xl font-bold text-white">${tariff !== null ? tariff.toFixed(2) : '0.00'}</p>
+                `;
+                container.appendChild(div);
+            }
+        }
+    }
+
+    document.getElementById('tariff-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const tariffRate = document.getElementById('tariff_rate').value;
+        if (!tariffRate || tariffRate <= 0) {
+            alert('Please enter a valid tariff rate.');
+            return;
+        }
+        try {
+            const response = await fetch('/tariff/set/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rate: parseFloat(tariffRate) })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to set tariff rate');
+            }
+            alert('Tariff rate set successfully.');
+        } catch (error) {
+            console.error('Error setting tariff rate:', error);
+            alert('Failed to set tariff rate. Please try again.');
+        }
+    });
+
+    document.getElementById('report-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+        const noResultsState = document.getElementById('noResultsState');
+        const totalTariffSection = document.getElementById('total-tariff-section');
+
+        loadingState.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+        noResultsState.classList.add('hidden');
+        totalTariffSection.classList.add('hidden');
+
+        const machineId = document.getElementById('machine').value;
+        const isCustomRange = customRadio.checked;
+        const params = new URLSearchParams();
+        if (machineId) params.append('machine_id', machineId);
+        if (isCustomRange) {
+            const startDateValue = document.getElementById('start_date').value;
+            const endDateValue = document.getElementById('end_date').value;
+            if (startDateValue && endDateValue) {
+                params.append('date_filter', 'custom');
+                params.append('start_date', startDateValue);
+                params.append('end_date', endDateValue);
+            }
+        } else {
+            const dateFilterValue = document.getElementById('date_filter').value;
+            if (dateFilterValue) {
+                params.append('date_filter', dateFilterValue);
+            }
+        }
+
+        try {
+            const response = await fetch(`/tariff/report/?${params.toString()}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch tariff report');
+            }
+            const data = await response.json();
+            loadingState.classList.add('hidden');
+            if (!data.total_tariff || (typeof data.total_tariff === 'object' && Object.keys(data.total_tariff).length === 0)) {
+                noResultsState.classList.remove('hidden');
+                totalTariffSection.classList.add('hidden');
+            } else {
+                totalTariffSection.classList.remove('hidden');
+                renderTotalTariff(data.total_tariff, machineId);
+            }
+        } catch (error) {
+            console.error('Error fetching tariff report:', error);
+            loadingState.classList.add('hidden');
+            noResultsState.classList.remove('hidden');
+            totalTariffSection.classList.add('hidden');
+        }
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', async function() {
+        const machineId = document.getElementById('machine').value;
+        const isCustomRange = customRadio.checked;
+        const params = new URLSearchParams();
+        if (machineId) params.append('machine_id', machineId);
+        if (isCustomRange) {
+            const startDateValue = document.getElementById('start_date').value;
+            const endDateValue = document.getElementById('end_date').value;
+            if (startDateValue && endDateValue) {
+                params.append('date_filter', 'custom');
+                params.append('start_date', startDateValue);
+                params.append('end_date', endDateValue);
+            }
+        } else {
+            const dateFilterValue = document.getElementById('date_filter').value;
+            if (dateFilterValue) {
+                params.append('date_filter', dateFilterValue);
+            }
+        }
+        try {
+            const response = await fetch(`/tariff/export/?${params.toString()}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to export Excel');
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tariff_report.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error exporting Excel:', error);
+            alert('Failed to export tariff report. Please try again.');
+        }
+    });
+
+    window.onload = loadMachines;
+</script>
+{% endblock %}

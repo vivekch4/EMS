@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% block title %}Connection{% endblock %}
+{% block page_title %}Modbus Connection{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+   
+
+    <!-- Connection Form -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <div class="px-8 py-6 border-b border-blue-500/20">
+                
+                <p class="text-blue-200/60 mt-1">Configure your Modbus TCP connection settings</p>
+            </div>
+
+            <div class="p-8">
+                <form id="connectionForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- IP Address Field -->
+                        <div class="space-y-2">
+                            <label for="ip_address" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                                </svg>
+                                IP Address
+                            </label>
+                            <input 
+                                type="text" 
+                                id="ip_address" 
+                                name="ip_address" 
+                                required
+                                pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                placeholder="192.168.1.100"
+                            >
+                            <p class="text-xs text-blue-300/60">Enter the IP address of your Modbus server</p>
+                        </div>
+
+                        <!-- Port Field -->
+                        <div class="space-y-2">
+                            <label for="port" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                Port Number
+                            </label>
+                            <input 
+                                type="number" 
+                                id="port" 
+                                name="port" 
+                                required
+                                min="1"
+                                max="65535"
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                placeholder="502"
+                            >
+                            <p class="text-xs text-blue-300/60">Standard Modbus TCP port is 502</p>
+                        </div>
+                    </div>
+
+                    <!-- Connection Actions -->
+                    <div class="flex justify-between items-center pt-6 border-t border-blue-500/20">
+                        <button 
+                            type="button" 
+                            onclick="testConnection()"
+                            class="flex items-center px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-500 text-white font-medium rounded-xl shadow-lg shadow-cyan-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-cyan-400/40 hover:from-cyan-500 hover:to-blue-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/50"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            Test Connection
+                        </button>
+                        
+                        <button 
+                            type="submit" 
+                            id="connectBtn"
+                            class="group flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50"
+                        >
+                            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                            </svg>
+                            <span id="connectText">Connect to Server</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Connection Result Modal -->
+<div id="connectionPopup" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95" id="popupContainer">
+        <div id="popupIcon" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg">
+            <!-- Icon will be set dynamically -->
+        </div>
+        <h2 id="popupTitle" class="text-xl font-semibold mb-2"></h2>
+        <p id="popupMessage" class="mb-6 text-sm opacity-80"></p>
+        <div class="flex space-x-4">
+            <button 
+                onclick="closePopup()" 
+                class="flex-1 px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-xl transition-colors duration-300"
+            >
+                Close
+            </button>
+            <button 
+                id="retryBtn"
+                onclick="retryConnection()" 
+                class="hidden flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl transition-all duration-300 hover:scale-105"
+            >
+                Retry
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = window.authToken || localStorage.getItem('token');
+
+    function setLoading(isLoading, buttonId = 'connectBtn', textId = 'connectText', originalText = 'Connect to Server') {
+        const btn = document.getElementById(buttonId);
+        const text = document.getElementById(textId);
+        if (isLoading) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            text.textContent = 'Connecting...';
+            btn.querySelector('svg').classList.add('animate-spin');
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            text.textContent = originalText;
+            btn.querySelector('svg').classList.remove('animate-spin');
+        }
+    }
+
+    async function testConnection() {
+        setLoading(true, 'connectBtn', 'connectText', 'Testing...');
+        
+        try {
+            const response = await fetch('/connect/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            setLoading(false);
+            
+            if (response.ok && data.connection) {
+                const clientResponse = await fetch('/connect/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        ip_address: data.connection.ip_address, 
+                        port: parseInt(data.connection.port),
+                        timeout: 10,
+                        retries: 3
+                    })
+                });
+                
+                const clientData = await clientResponse.json();
+                
+                if (clientResponse.ok) {
+                    showPopup('Test Successful', 'Connection to Modbus server is valid.', true, false);
+                } else {
+                    showPopup('Test Failed', clientData.error || 'Failed to connect to Modbus server.', false, true);
+                }
+            } else {
+                showPopup('Test Failed', 'No saved connection found in database.', false, false);
+            }
+        } catch (error) {
+            setLoading(false);
+            showPopup('Test Failed', 'Network error occurred while testing. Please try again.', false, true);
+        }
+    }
+
+    document.getElementById('connectionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+    
+        const ip_address = document.getElementById('ip_address').value.trim();
+        const port = document.getElementById('port').value;
+
+        if (!ip_address || !port) {
+            showPopup('Connection Failed', 'Please provide IP address and port.', false, true);
+            return;
+        }
+        
+        const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipPattern.test(ip_address)) {
+            showPopup('Connection Failed', 'Please enter a valid IP address format (e.g., 192.168.1.100).', false, true);
+            return;
+        }
+        
+        if (isNaN(port) || port < 1 || port > 65535) {
+            showPopup('Connection Failed', 'Port must be a valid number between 1 and 65535.', false, true);
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('/connect/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    ip_address, 
+                    port: parseInt(port),
+                    timeout: 10,
+                    retries: 3
+                })
+            });
+            
+            const data = await response.json();
+            setLoading(false);
+
+            if (response.ok) {
+                showPopup('Connection Successful', data.message, true, false);
+                document.getElementById('ip_address').value = data.connection.ip_address;
+                document.getElementById('port').value = data.connection.port;
+            } else {
+                showPopup('Connection Failed', data.error || 'Failed to connect to Modbus server.', false, true);
+            }
+        } catch (error) {
+            setLoading(false);
+            showPopup('Connection Failed', 'Network error occurred while connecting. Please check your connection and try again.', false, true);
+        }
+    });
+
+    function showPopup(title, message, isSuccess, showRetry = false) {
+        const popup = document.getElementById('connectionPopup');
+        const container = document.getElementById('popupContainer');
+        const icon = document.getElementById('popupIcon');
+        const titleElement = document.getElementById('popupTitle');
+        const messageElement = document.getElementById('popupMessage');
+        const retryBtn = document.getElementById('retryBtn');
+
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+
+        if (isSuccess) {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-green-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            icon.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25';
+            icon.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            `;
+            titleElement.className = 'text-xl font-semibold mb-2 text-green-300';
+            messageElement.className = 'mb-6 text-sm opacity-80 text-green-200';
+        } else {
+            container.className = 'backdrop-blur-xl bg-slate-900/90 rounded-2xl p-8 text-center border border-red-500/30 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-100';
+            icon.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center shadow-lg shadow-red-500/25';
+            icon.innerHTML = `
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+            `;
+            titleElement.className = 'text-xl font-semibold mb-2 text-red-300';
+            messageElement.className = 'mb-6 text-sm opacity-80 text-red-200';
+        }
+
+        retryBtn.classList.toggle('hidden', !showRetry);
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closePopup() {
+        const popup = document.getElementById('connectionPopup');
+        const container = document.getElementById('popupContainer');
+        container.classList.remove('scale-100');
+        container.classList.add('scale-95');
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 300);
+    }
+
+    function retryConnection() {
+        closePopup();
+        document.getElementById('connectionForm').dispatchEvent(new Event('submit'));
+    }
+
+    document.getElementById('connectionPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePopup();
+        }
+    });
+
+    document.getElementById('ip_address').addEventListener('blur', function() {
+        const portField = document.getElementById('port');
+        if (!portField.value) {
+            portField.value = '502';
+        }
+    });
+
+    // Fetch and populate saved connection on page load
+    async function fetchConnectionStatus() {
+        try {
+            const response = await fetch('/connect/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (response.ok && data.connection) {
+                document.getElementById('ip_address').value = data.connection.ip_address;
+                document.getElementById('port').value = data.connection.port;
+            }
+        } catch (error) {
+            console.error('Error fetching connection status:', error);
+        }
+    }
+
+    window.addEventListener('load', fetchConnectionStatus);
+</script>
+{% endblock %}

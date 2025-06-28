@@ -1,0 +1,554 @@
+{% extends 'base.html' %}
+{% block title %}Alarm Management{% endblock %}
+{% block page_title %}Alarm Management{% endblock %}
+{% block content %}
+<style>
+    /* Target the table container */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px; /* Adjust this value to make the scrollbar thinner (e.g., 4px, 6px, etc.) */
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: transparent; /* Optional: Makes the track transparent */
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background-color: #4b5563; /* Adjust color to match your theme (e.g., slate-600) */
+        border-radius: 3px; /* Rounds the thumb edges */
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background-color: #6b7280; /* Optional: Darker shade on hover */
+    }
+
+    /* For Firefox */
+    .overflow-x-auto {
+        scrollbar-width: thin; /* 'thin' or 'auto' */
+        scrollbar-color: #4b5563 transparent; /* Thumb color and track color */
+    }
+</style>
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+            <p class="text-blue-200/80">Monitor and manage system alarms and thresholds</p>
+        </div>
+        
+        <!-- Create New Alarm Button -->
+        <a href="/create_alarm_page/" class="group flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50">
+            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Create New Alarm
+        </a>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <!-- Glassmorphism effect -->
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <!-- Table Header -->
+            <div class="px-8 py-6 border-b border-blue-500/20">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Active Alarms & Thresholds
+                </h2>
+            </div>
+
+            <!-- Table Container -->
+            <div class="p-8">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-blue-500/20">
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Machine
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                        Parameter
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        Threshold
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                        Percentage
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                        </svg>
+                                        Level
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                        </svg>
+                                        Contact
+                                    </div>
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-blue-200 uppercase tracking-wider">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                        </svg>
+                                        Actions
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="thresholds_table" class="divide-y divide-blue-500/10">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="flex items-center justify-center py-12">
+                    <div class="flex items-center text-blue-200">
+                        <svg class="animate-spin w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Loading alarms...
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-blue-300/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-blue-200 mb-2">No alarms configured</h3>
+                    <p class="text-blue-300/60 mb-6">Get started by creating your first alarm threshold</p>
+                    <a href="/create_alarm_page/" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-medium rounded-xl hover:from-green-500 hover:to-emerald-400 transition-all duration-300">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create First Alarm
+                    </a>
+                </div>
+
+                <!-- Messages -->
+                <div id="message" class="mt-6"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<!-- Update Modal -->
+<!-- Update Modal -->
+<div id="updateModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+    <div class="backdrop-blur-xl bg-slate-800/90 rounded-2xl border border-blue-500/30 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div class="relative z-10 flex flex-col h-full">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-blue-500/20 flex-shrink-0">
+                <h3 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Update Threshold
+                </h3>
+            </div>
+
+            <!-- Modal Content - Scrollable -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">Machine</label>
+                        <div id="modal_machine_name" class="px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white"></div>
+                        <input type="hidden" id="update_machine">
+                        <input type="hidden" id="update_parameter">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">Parameter</label>
+                        <div id="modal_parameter" class="px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white"></div>
+                    </div>
+
+                    <div>
+                        <label for="update_threshold_value" class="block text-sm font-medium text-blue-100 mb-2">Threshold Value</label>
+                        <input type="number" step="0.01" id="update_threshold_value" 
+                               class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
+                    </div>
+
+                    <div>
+                        <label for="update_percentage" class="block text-sm font-medium text-blue-100 mb-2">Percentage (%)</label>
+                        <input type="number" step="0.01" id="update_percentage" 
+                               class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
+                    </div>
+
+                    <div>
+                    <label for="update_level" class="block text-sm font-medium text-blue-100 mb-2">Level</label>
+                    <input type="text" id="update_level" 
+                           class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
+                </div>
+
+                    <div>
+                        <label for="update_contact_email" class="block text-sm font-medium text-blue-100 mb-2">Contact Email</label>
+                        <input type="email" id="update_contact_email" 
+                               class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
+                    </div>
+                </div>
+
+                <div id="update_message" class="text-sm mt-4"></div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="px-6 py-4 border-t border-blue-500/20 flex justify-end space-x-3 flex-shrink-0">
+                <button onclick="closeUpdateModal()" 
+                        class="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white font-medium rounded-xl transition-all duration-300 border border-slate-500/30 hover:border-slate-400/50">
+                    Cancel
+                </button>
+                <button onclick="updateThreshold()" 
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-xl hover:from-blue-500 hover:to-blue-400 transition-all duration-300 shadow-lg shadow-blue-500/30">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="backdrop-blur-xl bg-slate-800/90 rounded-2xl border border-red-500/30 shadow-2xl w-full max-w-md mx-4 p-4">
+        <div class="relative z-10">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-red-500/20">
+                <h3 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Confirm Deletion
+                </h3>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6 text-center space-y-4">
+                <p class="text-blue-200">Are you sure you want to delete this threshold? This action cannot be undone.</p>
+                <div id="delete_message" class="text-sm"></div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="px-6 py-4 border-t border-red-500/20 flex justify-end space-x-3">
+                <button onclick="closeDeleteModal()" 
+                        class="px-4 py-2 bg-slate-600/50 hover:bg-slate-600/70 text-white font-medium rounded-xl transition-all duration-300 border border-slate-500/30 hover:border-slate-400/50">
+                    Cancel
+                </button>
+                <button onclick="confirmDelete()" 
+                        class="px-6 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-500 hover:to-red-400 transition-all duration-300 shadow-lg shadow-red-500/30">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Use window.authToken instead of localStorage for token storage
+    const token = window.authToken || localStorage.getItem('token');
+    let currentThresholdId = null;
+
+    // Show message function
+    function showMessage(message, type = 'info') {
+        const messageDiv = document.getElementById('message');
+        const colors = {
+            success: 'bg-green-600/20 border-green-500/30 text-green-300',
+            error: 'bg-red-600/20 border-red-500/30 text-red-300',
+            info: 'bg-blue-600/20 border-blue-500/30 text-blue-300'
+        };
+        
+        messageDiv.innerHTML = `
+            <div class="flex items-center p-4 ${colors[type]} border rounded-xl">
+                <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' :
+                      type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' :
+                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'}
+                </svg>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 5000);
+    }
+
+    // Get level badge color
+    function getLevelBadge(level) {
+        const levelColors = {
+            'critical': 'bg-red-500/20 text-red-300 border-red-500/40',
+            'high': 'bg-orange-500/20 text-orange-300 border-orange-500/40',
+            'medium': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+            'low': 'bg-green-500/20 text-green-300 border-green-500/40',
+            'info': 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+        };
+        
+        const colorClass = levelColors[level.toLowerCase()] || levelColors['info'];
+        return `<span class="px-3 py-1 rounded-full text-xs font-medium border ${colorClass}">${level}</span>`;
+    }
+
+    // Fetch and display thresholds
+    async function loadThresholds() {
+        const loadingDiv = document.getElementById('loading');
+        const emptyStateDiv = document.getElementById('empty-state');
+        const tableBody = document.getElementById('thresholds_table');
+        
+        loadingDiv.classList.remove('hidden');
+        emptyStateDiv.classList.add('hidden');
+        
+        try {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch('/thresholds/', {
+                method: 'GET',
+                headers: headers
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const thresholds = await response.json();
+            loadingDiv.classList.add('hidden');
+            
+            if (thresholds.length === 0) {
+                emptyStateDiv.classList.remove('hidden');
+                tableBody.innerHTML = '';
+                return;
+            }
+            
+            tableBody.innerHTML = thresholds.map(threshold => `
+                <tr class="hover:bg-blue-500/5 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                            <span class="text-white font-medium">${threshold.machine_name}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-blue-200">${threshold.parameter}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-white font-mono">${threshold.threshold_value}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-blue-200 font-mono">${threshold.percentage}%</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${getLevelBadge(threshold.level)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-blue-200">${threshold.contact_email}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex space-x-2">
+                            <button onclick="openUpdateModal(${threshold.id}, '${threshold.machine}', '${threshold.machine_name}', '${threshold.parameter}', ${threshold.threshold_value}, ${threshold.percentage}, '${threshold.level}', '${threshold.contact_email}')" 
+                                    class="flex items-center px-3 py-2 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 font-medium rounded-lg transition-all duration-300 border border-yellow-500/30 hover:border-yellow-400/50">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="openDeleteModal(${threshold.id})" 
+                                    class="flex items-center px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-300 font-medium rounded-lg transition-all duration-300 border border-red-500/30 hover:border-red-400/50">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading thresholds:', error);
+            loadingDiv.classList.add('hidden');
+            showMessage(`Error loading thresholds: ${error.message}`, 'error');
+        }
+    }
+
+    // Open update modal
+    function openUpdateModal(id, machine, machine_name, parameter, threshold_value, percentage, level, contact_email) {
+        currentThresholdId = id;
+        
+        document.getElementById('modal_machine_name').textContent = machine_name;
+        document.getElementById('modal_parameter').textContent = parameter;
+        document.getElementById('update_machine').value = machine;
+        document.getElementById('update_parameter').value = parameter;
+        document.getElementById('update_threshold_value').value = threshold_value;
+        document.getElementById('update_percentage').value = percentage;
+        document.getElementById('update_level').value = level;
+        document.getElementById('update_contact_email').value = contact_email;
+        document.getElementById('update_message').innerHTML = '';
+        
+        document.getElementById('updateModal').classList.remove('hidden');
+    }
+
+    // Close update modal
+    function closeUpdateModal() {
+        document.getElementById('updateModal').classList.add('hidden');
+        document.getElementById('update_message').innerHTML = '';
+        currentThresholdId = null;
+    }
+
+    // Update threshold
+    async function updateThreshold() {
+        const thresholdValue = document.getElementById('update_threshold_value').value;
+        const percentage = document.getElementById('update_percentage').value;
+        const level = document.getElementById('update_level').value;
+        const contactEmail = document.getElementById('update_contact_email').value;
+        const machine = document.getElementById('update_machine').value;
+        const parameter = document.getElementById('update_parameter').value;
+
+        // Basic validation
+        if (!thresholdValue || !percentage || !level || !contactEmail) {
+            document.getElementById('update_message').innerHTML = `
+                <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 text-red-300 rounded-xl">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Please fill in all fields</span>
+                </div>
+            `;
+            return;
+        }
+
+        try {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`/thresholds/${currentThresholdId}/`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({
+                    machine,
+                    parameter,
+                    threshold_value: parseFloat(thresholdValue),
+                    percentage: parseFloat(percentage),
+                    level,
+                    contact_email: contactEmail
+                })
+            });
+
+            if (response.ok) {
+                showMessage('Threshold updated successfully!', 'success');
+                closeUpdateModal();
+                loadThresholds(); // Refresh table
+            } else {
+                const errorData = await response.json();
+                document.getElementById('update_message').innerHTML = `
+                    <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 text-red-300 rounded-xl">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Error: ${JSON.stringify(errorData)}</span>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            document.getElementById('update_message').innerHTML = `
+                <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 text-red-300 rounded-xl">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    }
+
+    // Open delete modal
+    function openDeleteModal(id) {
+        currentThresholdId = id;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    // Close delete modal
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.getElementById('delete_message').innerHTML = '';
+        currentThresholdId = null;
+    }
+
+    // Confirm delete and perform deletion
+    async function confirmDelete() {
+        try {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`/thresholds/${currentThresholdId}/`, {
+                method: 'DELETE',
+                headers: headers
+            });
+
+            if (response.ok) {
+                showMessage('Threshold deleted successfully!', 'success');
+                closeDeleteModal();
+                loadThresholds(); // Refresh table
+            } else {
+                const errorData = await response.json();
+                document.getElementById('delete_message').innerHTML = `
+                    <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 text-red-300 rounded-xl">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Error: ${JSON.stringify(errorData)}</span>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            document.getElementById('delete_message').innerHTML = `
+                <div class="flex items-center p-4 bg-red-600/20 border border-red-500/30 text-red-300 rounded-xl">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    }
+
+    // Load thresholds on page load
+    document.addEventListener('DOMContentLoaded', loadThresholds);
+</script>
+{% endblock %}

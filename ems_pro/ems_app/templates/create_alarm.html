@@ -1,0 +1,386 @@
+<!-- templates/create_threshold.html -->
+{% extends 'base.html' %}
+{% block title %}Create Alarm{% endblock %}
+{% block page_title %}Create Alarm{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div>
+
+            <p class="text-blue-200/80">Set up energy monitoring thresholds with multiple alert levels</p>
+        </div>
+        
+        <!-- Back Button -->
+        <a href="/alarm_page/" class="group flex items-center px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-500 text-white font-semibold rounded-xl shadow-lg shadow-slate-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-slate-400/40 hover:from-slate-500 hover:to-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400/50">
+            <svg class="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Alarm
+        </a>
+    </div>
+
+    <!-- Create Threshold Form -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <!-- Glassmorphism effect -->
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <!-- Form Header -->
+            <div class="px-8 py-6 border-b border-blue-500/20">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Alarm Configuration
+                </h2>
+               
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-8">
+                <div class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Configuration -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Machine Selection -->
+                        <div class="space-y-2">
+                            <label for="machine" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                Machine
+                            </label>
+                            <select 
+                                id="machine" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                required
+                            >
+                                <option value="" class="bg-slate-800 text-gray-300">Select a machine</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Parameter Field -->
+                        <div class="space-y-2">
+                            <label for="parameter" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Parameter
+                            </label>
+                            <select 
+                                id="parameter" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                disabled
+                            >
+                                <option value="kWh" selected class="bg-slate-800 text-gray-300">Energy (kWh)</option>
+                            </select>
+                        </div>
+
+                        <!-- Threshold Value -->
+                        <div class="space-y-2">
+                            <label for="threshold_value" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                                Threshold Value
+                            </label>
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                id="threshold_value" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                placeholder="Enter threshold value"
+                                required
+                            >
+                        </div>
+
+                        <!-- Number of Levels -->
+                        <div class="space-y-2">
+                            <label for="num_levels" class="flex items-center text-sm font-medium text-blue-100">
+                                <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                </svg>
+                                Number of Levels
+                            </label>
+                            <input 
+                                type="number" 
+                                min="1" 
+                                id="num_levels" 
+                                class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" 
+                                placeholder="Enter number of alert levels"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Levels Container -->
+                    <div id="levels_container" class="space-y-4">
+                        <!-- Dynamically populated level inputs -->
+                    </div>
+
+                    <!-- Message Display -->
+                    <div id="message" class="hidden">
+                        <div id="messageContent" class="flex items-center p-4 rounded-xl">
+                            <svg id="messageIcon" class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+                            <span id="messageText"></span>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-4 pt-6 border-t border-blue-500/20">
+                        <button 
+                            type="button" 
+                            onclick="resetForm()"
+                            class="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white font-medium rounded-xl transition-all duration-300 hover:scale-105 border border-slate-500/30 hover:border-slate-400/50"
+                        >
+                            Reset Form
+                        </button>
+                        <button 
+                            id="submitBtn" 
+                            class="group flex items-center px-8 py-3 bg-gradient-to-r from-amber-600 to-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-400/40 hover:from-amber-500 hover:to-orange-400 focus:outline-none focus:ring-4 focus:ring-amber-400/50"
+                        >
+                            <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span id="submitText">Create Alarm</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Use window.authToken instead of localStorage for token storage
+    const token = window.authToken || localStorage.getItem('token');
+
+    // Show message function
+    function showMessage(text, type = 'error') {
+        const messageDiv = document.getElementById('message');
+        const messageContent = document.getElementById('messageContent');
+        const messageIcon = document.getElementById('messageIcon');
+        const messageText = document.getElementById('messageText');
+        
+        messageText.textContent = text;
+        messageDiv.classList.remove('hidden');
+        
+        if (type === 'success') {
+            messageContent.className = 'flex items-center p-4 bg-green-600/20 border border-green-500/30 rounded-xl text-green-300';
+            messageIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        } else {
+            messageContent.className = 'flex items-center p-4 bg-red-600/20 border border-red-500/30 rounded-xl text-red-300';
+            messageIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+        }
+    }
+
+    // Hide message function
+    function hideMessage() {
+        document.getElementById('message').classList.add('hidden');
+    }
+
+    // Reset form function
+    function resetForm() {
+        document.getElementById('threshold_value').value = '';
+        document.getElementById('num_levels').value = '';
+        document.getElementById('levels_container').innerHTML = '';
+        hideMessage();
+    }
+
+    // Show loading state
+    function setLoading(isLoading) {
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        
+        if (isLoading) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitText.textContent = 'Creating...';
+            submitBtn.querySelector('svg').classList.add('animate-spin');
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitText.textContent = 'Create Thresholds';
+            submitBtn.querySelector('svg').classList.remove('animate-spin');
+        }
+    }
+
+    // Fetch machines to populate the dropdown
+    async function loadMachines() {
+        try {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch('/machines/', {
+                method: 'GET',
+                headers: headers
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('API Response Data:', data);
+            
+            // Extract the machines array from the response
+            const machines = data.machines || data; // Handle both cases: nested or direct array
+            console.log('Machines Array:', machines);
+            
+            // Ensure machines is an array
+            if (!Array.isArray(machines)) {
+                throw new Error('Expected machines to be an array, got: ' + typeof machines);
+            }
+            const machineSelect = document.getElementById('machine');
+            machineSelect.innerHTML = '<option value="" class="bg-slate-800 text-gray-300">Select a machine</option>' + 
+                machines.map(machine => 
+                    `<option value="${machine.id}" class="bg-slate-800 text-white">${machine.name}</option>`
+                ).join('');
+        } catch (error) {
+            console.error('Error loading machines:', error);
+            showMessage(`Error loading machines: ${error.message}`, 'error');
+        }
+    }
+
+    // Generate level input fields dynamically
+    function generateLevels() {
+        const numLevels = parseInt(document.getElementById('num_levels').value) || 0;
+        const levelsContainer = document.getElementById('levels_container');
+        levelsContainer.innerHTML = '';
+
+        for (let i = 1; i <= numLevels; i++) {
+            const levelDiv = document.createElement('div');
+            levelDiv.className = 'backdrop-blur-xl bg-slate-700/20 rounded-xl border border-blue-500/20 p-6 space-y-4';
+            levelDiv.innerHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                        ${i}
+                    </div>
+                    <h3 class="text-lg font-semibold text-white">Alert Level ${i}</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="percentage_${i}" class="flex items-center text-sm font-medium text-blue-100">
+                            <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Percentage (%)
+                        </label>
+                        <input 
+                            type="number" 
+                            step="0.01" 
+                            id="percentage_${i}" 
+                            name="percentage_${i}" 
+                            class="w-full px-4 py-3 bg-slate-600/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300" 
+                            placeholder="Enter percentage"
+                            required
+                        >
+                    </div>
+                    <div class="space-y-2">
+                        <label for="contact_email_${i}" class="flex items-center text-sm font-medium text-blue-100">
+                            <svg class="w-4 h-4 mr-2 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            Contact Email
+                        </label>
+                        <input 
+                            type="email" 
+                            id="contact_email_${i}" 
+                            name="contact_email_${i}" 
+                            class="w-full px-4 py-3 bg-slate-600/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300" 
+                            placeholder="Enter contact email"
+                            required
+                        >
+                    </div>
+                </div>
+            `;
+
+            levelsContainer.appendChild(levelDiv);
+        }
+    }
+
+    // Add event listeners for immediate response
+    document.getElementById('num_levels').addEventListener('input', generateLevels);
+    document.getElementById('num_levels').addEventListener('change', generateLevels);
+
+    // Handle form submission
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const machine = document.getElementById('machine').value;
+        const parameter = document.getElementById('parameter').value;
+        const threshold_value = document.getElementById('threshold_value').value;
+        const num_levels = document.getElementById('num_levels').value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        hideMessage();
+
+        // Validate inputs
+        if (!machine || !threshold_value || !num_levels) {
+            showMessage('Machine, Threshold Value, and Number of Levels are required.', 'error');
+            return;
+        }
+
+        const levels = [];
+        for (let i = 1; i <= parseInt(num_levels); i++) {
+            const percentage = document.getElementById(`percentage_${i}`).value;
+            const contact_email = document.getElementById(`contact_email_${i}`).value;
+        
+            if (!percentage || !contact_email) {
+                showMessage(`All fields for Level ${i} are required.`, 'error');
+                return;
+            }
+        
+            levels.push({
+                machine,
+                parameter,
+                threshold_value: parseFloat(threshold_value),
+                percentage: parseFloat(percentage),
+                level: `Level ${i}`,  // Automatically set level name here
+                contact_email
+            });
+        }
+
+        setLoading(true);
+
+        try {
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch('/thresholds/', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(levels)
+            });
+
+            if (response.ok) {
+                showMessage('Alarm created successfully!', 'success');
+                // Clear form after a delay
+                setTimeout(() => {
+                    resetForm();
+                }, 1500);
+            } else {
+                const errorData = await response.json();
+                showMessage(`Error: ${JSON.stringify(errorData)}`, 'error');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'error');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    // Load machines on page load
+    window.addEventListener('load', loadMachines);
+</script>
+{% endblock %}

@@ -1,0 +1,522 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Section -->
+  <div class="flex justify-between items-center">
+        <div>
+          
+            <p class="text-blue-200/80">Advanced visualization and analysis of machine energy data</p>
+        </div>
+        
+        <!-- Live Status Indicator -->
+        <div id="liveIndicator" class="hidden flex items-center px-4 py-2 bg-gradient-to-r from-green-600/20 to-emerald-500/20 text-green-300 rounded-xl border border-green-500/30">
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse mr-2"></div>
+            <span class="font-medium">Live Analytics</span>
+        </div>
+    </div> 
+
+    <!-- Controls Panel -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10 p-6">
+            <div class="flex items-center mb-4">
+                <svg class="w-6 h-6 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                </svg>
+                <h2 class="text-xl font-semibold text-white">Chart Configuration</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                <!-- Machine Select -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200">Machine</label>
+                    <select id="machineSelect" class="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        <option value="all">All Machines</option>
+                    </select>
+                </div>
+                
+                <!-- Chart Type -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200">Chart Type</label>
+                    <select id="graphType" class="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        <option value="line">Line Chart</option>
+                        <option value="bar">Bar Chart</option>
+                        <option value="doughnut">Donut Chart</option>
+                        <option value="scatter">Scatter Plot</option>
+                    </select>
+                </div>
+                
+                <!-- Start Date -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200">Start Date</label>
+                    <input type="date" id="startDate" class="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                </div>
+                
+                <!-- End Date -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200">End Date</label>
+                    <input type="date" id="endDate" class="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                </div>
+                
+                <!-- Live Toggle -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200">Mode</label>
+                    <div class="flex items-center h-10">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="liveToggle" class="sr-only">
+                            <div class="relative">
+                                <div class="block bg-slate-600 w-14 h-8 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform"></div>
+                            </div>
+                            <div class="ml-3 text-white font-medium">Live Data</div>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Update Button -->
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-blue-200 invisible">Update</label>
+                    <button onclick="updateChart()" class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 focus:ring-2 focus:ring-blue-500/50">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Update Chart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-red-300 font-medium" id="errorText"></span>
+        </div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <!-- Chart Header -->
+            <div class="px-6 py-4 border-b border-blue-500/20">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Energy Analytics Chart
+                    </h2>
+                    
+                    <div class="text-sm text-blue-200/60">
+                        <span id="chartStatus">Ready to display data</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="chartLoading" class="hidden flex justify-center items-center py-20">
+                <div class="relative">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+                    <div class="absolute inset-0 rounded-full border-2 border-blue-500/20"></div>
+                </div>
+                <p class="text-blue-100 ml-4">Loading chart data...</p>
+            </div>
+
+            <!-- Chart Canvas -->
+            <div id="chartContainer" class="p-6" style="height: 500px;">
+                <canvas id="analyticsChart" class="w-full h-full"></canvas>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyChart" class="hidden text-center py-20">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-gray-600 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/25">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">No Data Available</h3>
+                <p class="text-blue-200/80">Select your parameters and click "Update Chart" to visualize machine data</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom toggle switch styling */
+    #liveToggle:checked + div {
+        background-color: #10b981;
+    }
+    #liveToggle:checked + div .dot {
+        transform: translateX(100%);
+        background-color: white;
+    }
+    .dot {
+        transition: all 0.3s ease-in-out;
+    }
+    
+    /* Custom scrollbar for select elements */
+    select::-webkit-scrollbar {
+        width: 8px;
+    }
+    select::-webkit-scrollbar-track {
+        background: rgba(71, 85, 105, 0.3);
+        border-radius: 4px;
+    }
+    select::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 4px;
+    }
+    select::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.7);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
+
+<script>
+    let chartInstance = null;
+    let liveInterval = null;
+    const token = window.authToken || localStorage.getItem('token');
+
+    // Show/hide error messages
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        errorText.textContent = message;
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => {
+            errorDiv.classList.add('hidden');
+        }, 5000);
+    }
+
+    function hideError() {
+        document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    // Update chart status
+    function updateChartStatus(status) {
+        document.getElementById('chartStatus').textContent = status;
+    }
+
+    // Fetch machine names
+    async function fetchMachines() {
+        hideError();
+        
+        try {
+            const response = await fetch('/machines/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('Fetch Machines Response:', response.status, response.statusText);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('API Response Data:', data);
+                
+                const machines = data.machines || data;
+                console.log('Machines Array:', machines);
+                
+                if (!Array.isArray(machines)) {
+                    throw new Error('Expected machines to be an array, got: ' + typeof machines);
+                }
+                
+                const machineSelect = document.getElementById('machineSelect');
+                machineSelect.innerHTML = '<option value="all">All Machines</option>';
+                machines.forEach(machine => {
+                    const option = document.createElement('option');
+                    option.value = machine.id;
+                    option.textContent = machine.name;
+                    machineSelect.appendChild(option);
+                });
+                
+                if (machines.length === 0) {
+                    showError('No machines found');
+                }
+            } else {
+                const errorData = await response.json();
+                console.error('Fetch Machines Error:', errorData);
+                showError(errorData.error || `Failed to load machines: ${response.statusText}`);
+                if (response.status === 401) {
+                    window.location.href = '/';
+                }
+            }
+        } catch (error) {
+            console.error('Fetch Machines Exception:', error);
+            showError(`Error loading machines: ${error.message}`);
+        }
+    }
+
+    // Fetch readings based on filters
+    async function fetchReadings() {
+        const machineId = document.getElementById('machineSelect').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const isLive = document.getElementById('liveToggle').checked;
+
+        let url = '/readings/?';
+        if (machineId !== 'all') {
+            url += `machine=${machineId}&`;
+        }
+        if (!isLive && startDate && endDate) {
+            url += `start_date=${startDate}&end_date=${endDate}`;
+        } else if (isLive) {
+            url += 'limit=15';
+        }
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching readings:', error);
+            showError(`Failed to load readings: ${error.message}`);
+            return [];
+        }
+    }
+
+    // Update chart
+    async function updateChart() {
+        const graphType = document.getElementById('graphType').value;
+        const isLive = document.getElementById('liveToggle').checked;
+        
+        hideError();
+        document.getElementById('chartLoading').classList.remove('hidden');
+        document.getElementById('emptyChart').classList.add('hidden');
+        
+        updateChartStatus('Loading data...');
+        
+        const readings = await fetchReadings();
+        
+        document.getElementById('chartLoading').classList.add('hidden');
+
+        if (readings.length === 0) {
+            document.getElementById('emptyChart').classList.remove('hidden');
+            updateChartStatus('No data available');
+            return;
+        }
+
+        // Destroy existing chart
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        // Update live indicator
+        const liveIndicator = document.getElementById('liveIndicator');
+        if (isLive) {
+            liveIndicator.classList.remove('hidden');
+        } else {
+            liveIndicator.classList.add('hidden');
+        }
+
+        // Prepare data with modern color scheme
+        const datasets = [];
+        const colors = {
+            current: '#f59e0b', // amber
+            kwh: '#10b981',     // emerald
+            voltage: '#8b5cf6'  // purple
+        };
+
+        if (graphType === 'doughnut') {
+            // For donut charts, aggregate the latest values by metric type
+            let currentSum = 0, kwhSum = 0, voltageSum = 0;
+            
+            if (document.getElementById('machineSelect').value === 'all') {
+                // Get latest reading for each machine
+                const latestByMachine = new Map();
+                readings.forEach(r => {
+                    const key = r.machine_name;
+                    if (!latestByMachine.has(key) || new Date(r.timestamp) > new Date(latestByMachine.get(key).timestamp)) {
+                        latestByMachine.set(key, r);
+                    }
+                });
+                
+                latestByMachine.forEach(reading => {
+                    currentSum += parseFloat(reading.current) || 0;
+                    kwhSum += parseFloat(reading.kwh) || 0;
+                    voltageSum += parseFloat(reading.voltage) || 0;
+                });
+            } else {
+                // Use latest reading for selected machine
+                const latestReading = readings[readings.length - 1];
+                if (latestReading) {
+                    currentSum = parseFloat(latestReading.current) || 0;
+                    kwhSum = parseFloat(latestReading.kwh) || 0;
+                    voltageSum = parseFloat(latestReading.voltage) || 0;
+                }
+            }
+            
+            datasets.push({
+                label: 'Energy Metrics',
+                data: [currentSum, kwhSum, voltageSum / 10], // Scale voltage down for better visualization
+                backgroundColor: [colors.current, colors.kwh, colors.voltage],
+                borderColor: [colors.current, colors.kwh, colors.voltage],
+                borderWidth: 2,
+                cutout: '60%' // This creates the donut effect
+            });
+        } else if (document.getElementById('machineSelect').value === 'all') {
+            const machines = [...new Set(readings.map(r => r.machine_name))];
+            machines.forEach((machine, index) => {
+                const machineReadings = readings.filter(r => r.machine_name === machine);
+                const hue = (index * 137.5) % 360; // Golden angle for color distribution
+                
+                datasets.push({
+                    label: `${machine} Current`,
+                    data: machineReadings.map(r => ({ x: r.timestamp, y: r.current })),
+                    borderColor: `hsl(${hue}, 80%, 60%)`,
+                    backgroundColor: graphType === 'bar' ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 80%, 60%, 0.1)`,
+                    fill: false,
+                    tension: 0.4
+                });
+                datasets.push({
+                    label: `${machine} kWh`,
+                    data: machineReadings.map(r => ({ x: r.timestamp, y: r.kwh })),
+                    borderColor: `hsl(${(hue + 120) % 360}, 80%, 60%)`,
+                    backgroundColor: graphType === 'bar' ? `hsl(${(hue + 120) % 360}, 80%, 60%)` : `hsl(${(hue + 120) % 360}, 80%, 60%, 0.1)`,
+                    fill: false,
+                    tension: 0.4
+                });
+                datasets.push({
+                    label: `${machine} Voltage`,
+                    data: machineReadings.map(r => ({ x: r.timestamp, y: r.voltage })),
+                    borderColor: `hsl(${(hue + 240) % 360}, 80%, 60%)`,
+                    backgroundColor: graphType === 'bar' ? `hsl(${(hue + 240) % 360}, 80%, 60%)` : `hsl(${(hue + 240) % 360}, 80%, 60%, 0.1)`,
+                    fill: false,
+                    tension: 0.4
+                });
+            });
+        } else {
+            datasets.push({
+                label: 'Current (A)',
+                data: readings.map(r => ({ x: r.timestamp, y: r.current })),
+                borderColor: colors.current,
+                backgroundColor: graphType === 'bar' ? colors.current : colors.current + '40',
+                fill: false,
+                tension: 0.4
+            });
+            datasets.push({
+                label: 'Energy (kWh)',
+                data: readings.map(r => ({ x: r.timestamp, y: r.kwh })),
+                borderColor: colors.kwh,
+                backgroundColor: graphType === 'bar' ? colors.kwh : colors.kwh + '40',
+                fill: false,
+                tension: 0.4
+            });
+            datasets.push({
+                label: 'Voltage (V)',
+                data: readings.map(r => ({ x: r.timestamp, y: r.voltage })),
+                borderColor: colors.voltage,
+                backgroundColor: graphType === 'bar' ? colors.voltage : colors.voltage + '40',
+                fill: false,
+                tension: 0.4
+            });
+        }
+
+        // Configure chart with dark theme
+        const ctx = document.getElementById('analyticsChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: graphType === 'doughnut' ? 'doughnut' : graphType,
+            data: { datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#e2e8f0',
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#e2e8f0',
+                        bodyColor: '#cbd5e1',
+                        borderColor: '#334155',
+                        borderWidth: 1
+                    }
+                },
+                scales: graphType !== 'doughnut' ? {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'minute' },
+                        title: {
+                            display: true,
+                            text: 'Timestamp',
+                            color: '#94a3b8'
+                        },
+                        ticks: { color: '#64748b' },
+                        grid: { color: '#334155' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value',
+                            color: '#94a3b8'
+                        },
+                        ticks: { color: '#64748b' },
+                        grid: { color: '#334155' }
+                    }
+                } : {}
+            }
+        });
+
+        // Handle live updates
+        if (isLive && !liveInterval) {
+            liveInterval = setInterval(updateChart, 5000);
+            updateChartStatus('Live updating every 5 seconds');
+        } else if (!isLive && liveInterval) {
+            clearInterval(liveInterval);
+            liveInterval = null;
+            updateChartStatus(`Showing ${readings.length} data points`);
+        } else {
+            updateChartStatus(`Showing ${readings.length} data points`);
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!token) {
+            showError('Please log in to access analytics');
+            window.location.href = '/';
+            return;
+        }
+        
+        // Show empty state initially
+        document.getElementById('emptyChart').classList.remove('hidden');
+        
+        fetchMachines();
+        
+        // Live toggle event handler
+        document.getElementById('liveToggle').addEventListener('change', (e) => {
+            if (!e.target.checked && liveInterval) {
+                clearInterval(liveInterval);
+                liveInterval = null;
+                document.getElementById('liveIndicator').classList.add('hidden');
+            }
+            updateChart();
+        });
+    });
+</script>
+{% endblock %}
