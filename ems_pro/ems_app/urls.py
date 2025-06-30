@@ -48,4 +48,5 @@ urlpatterns = [
      path('tariff/set/', TariffSetView.as_view(), name='tariff-set'),
     path('tariff/report/', TariffReportView.as_view(), name='tariff-report'),
     path('tariff/export/', TariffExportView.as_view(), name='tariff-export'),
+    path('send_alert/', SendAlertView.as_view(), name='send_alert'),
 ]

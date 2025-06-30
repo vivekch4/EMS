@@ -5,6 +5,7 @@ from .models import CustomUser, Machine,PLCConnection,MachineReading
 from .serializers import *
 from django.http import HttpResponse
 import pandas as pd
+from io import BytesIO
 from django.shortcuts import render, redirect
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.decorators import login_required
@@ -23,6 +24,11 @@ from io import StringIO
 import csv
 from django.http import StreamingHttpResponse
 from rest_framework.pagination import PageNumberPagination
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+from django.conf import settings
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -235,6 +241,66 @@ class MachineDetailView(APIView):
         except Exception as e:
             logger.error(f"Error deleting machine {pk}: {e}")
             return Response({'error': f"Failed to delete machine: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SendAlertView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request):
+        try:
+            machine_id = request.data.get('machine_id')
+            kwh_threshold = request.data.get('kwh_threshold')
+            email = request.data.get('email')
+
+            # Validate inputs
+            if not all([machine_id, kwh_threshold, email]):
+                return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Get machine
+            try:
+                machine = Machine.objects.get(id=machine_id)
+            except Machine.DoesNotExist:
+                logger.error(f"Machine with id {machine_id} not found")
+                return Response({'error': 'Machine not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Prepare email
+            subject = f'Alert: {machine.name} - kWh Threshold Exceeded'
+            message = f"""
+            Hello,
+
+            An alert has been triggered for {machine.name}.
+
+            Parameter: kWh
+            Threshold: {kwh_threshold} kWh
+            Timestamp: {dt.now().isoformat()}
+
+            Please take appropriate action.
+
+            Best regards,
+            Your Monitoring Team
+            """
+
+            msg = MIMEMultipart()
+            msg['From'] = settings.SMTP_EMAIL
+            msg['To'] = email
+            msg['Subject'] = subject
+            msg.attach(MIMEText(message, 'plain'))
+
+            # Send email
+            try:
+                with smtplib.SMTP('smtp.gmail.com', 587) as server:
+                    server.starttls()
+                    server.login(settings.SMTP_EMAIL, settings.SMTP_APP_PASSWORD)
+                    server.send_message(msg)
+                logger.info(f"Alert email sent to {email} for machine {machine.name}")
+                return Response({'message': 'Alert email sent successfully'}, status=status.HTTP_200_OK)
+            except Exception as e:
+                logger.error(f"Failed to send alert email to {email}: {e}")
+                return Response({'error': f"Failed to send email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as e:
+            logger.error(f"Error processing alert request: {e}")
+            return Response({'error': f"Server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class MachineKwhSummaryPagination(PageNumberPagination):
     page_size = 2  # default items per page
@@ -544,6 +610,16 @@ class MachineReadingExportView(APIView):
     
 class TariffSetView(APIView):
     permission_classes = [IsAuthenticated]
+    def get(self, request):
+        try:
+            tariff = Tariff.objects.get(id=1)
+            serializer = TariffSerializer(tariff)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Tariff.DoesNotExist:
+            return Response({
+                'rate': 0.0,
+                'emission_factor': 0.82
+            }, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = TariffSerializer(data=request.data)
@@ -565,12 +641,10 @@ class TariffReportView(APIView):
         start_date = request.query_params.get('start_date', '')
         end_date = request.query_params.get('end_date', '')
 
-        # Base queryset for readings
         readings = MachineReading.objects.all()
         if machine_id:
             readings = readings.filter(machine__id=machine_id)
 
-        # Determine date range for filtering
         if date_filter == 'custom' and start_date and end_date:
             try:
                 start_date = dt.strptime(start_date, '%Y-%m-%d')
@@ -589,68 +663,73 @@ class TariffReportView(APIView):
 
         readings = readings.order_by('-timestamp')
 
-        # Get tariff rate
         try:
             tariff = Tariff.objects.get(id=1)
             tariff_rate = tariff.rate
+            emission_factor = tariff.emission_factor
         except Tariff.DoesNotExist:
             return Response({'error': 'Tariff rate not set'}, status=status.HTTP_400_BAD_REQUEST)
 
         total_tariff = None
+        total_emission = None
         machine_tariff_totals = {}
+        machine_emission_totals = {}
         tariff_data = []
 
         if machine_id:
-            # Calculate kWh consumption for the selected machine
             kwh_readings = readings.filter(kwh__isnull=False).order_by('timestamp')
             if kwh_readings.exists():
-                # Get the earliest kWh reading within the date range
                 first_kwh = kwh_readings.first().kwh
-                # Get the most recent kWh reading within the date range
                 last_kwh = kwh_readings.last().kwh
                 total_kwh = last_kwh - first_kwh if first_kwh is not None and last_kwh is not None else 0
                 total_tariff = total_kwh * tariff_rate
+                total_emission = total_kwh * emission_factor
+
             for reading in readings:
                 tariff_cost = reading.kwh * tariff_rate if reading.kwh is not None else None
+                co2_emission = reading.kwh * emission_factor if reading.kwh is not None else None
                 tariff_data.append({
                     'machine_name': reading.machine.name,
                     'machine_id': reading.machine.id,
                     'kwh': reading.kwh,
-                    'tariff_cost': tariff_cost
+                    'tariff_cost': tariff_cost,
+                    'co2_emission_kg': co2_emission
                 })
         else:
-            # Calculate kWh consumption for all machines
             machines = Machine.objects.all()
             for machine in machines:
                 machine_readings = MachineReading.objects.filter(machine=machine, kwh__isnull=False)
-                if date_filter == 'custom' and start_date and end_date:
+                if date_filter:
                     machine_readings = machine_readings.filter(timestamp__range=[start_date, end_date])
-                elif date_filter == 'last_week':
-                    machine_readings = machine_readings.filter(timestamp__range=[start_date, end_date])
-                elif date_filter == 'last_month':
-                    machine_readings = machine_readings.filter(timestamp__range=[start_date, end_date])
+
                 if machine_readings.exists():
                     machine_readings = machine_readings.order_by('timestamp')
                     first_kwh = machine_readings.first().kwh
                     last_kwh = machine_readings.last().kwh
                     total_kwh = last_kwh - first_kwh if first_kwh is not None and last_kwh is not None else 0
                     machine_tariff_totals[machine.name] = total_kwh * tariff_rate
+                    machine_emission_totals[machine.name] = total_kwh * emission_factor
+
                 for reading in machine_readings:
                     tariff_cost = reading.kwh * tariff_rate if reading.kwh is not None else None
+                    co2_emission = reading.kwh * emission_factor if reading.kwh is not None else None
                     tariff_data.append({
                         'machine_name': machine.name,
                         'machine_id': machine.id,
                         'kwh': reading.kwh,
-                        'tariff_cost': tariff_cost
+                        'tariff_cost': tariff_cost,
+                        'co2_emission_kg': co2_emission
                     })
 
         response_data = {
             'tariff_data': tariff_data,
             'total_tariff': total_tariff if machine_id else machine_tariff_totals,
-            'tariff_rate': tariff_rate
+            'total_co2_emission': total_emission if machine_id else machine_emission_totals,
+            'tariff_rate': tariff_rate,
+            'emission_factor': emission_factor
         }
         return Response(response_data, status=status.HTTP_200_OK)
-from io import BytesIO
+
 class TariffExportView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -664,13 +743,14 @@ class TariffExportView(APIView):
         readings = MachineReading.objects.all()
         if machine_id:
             readings = readings.filter(machine__id=machine_id)
+
         if date_filter == 'custom' and start_date and end_date:
             try:
                 start_date = dt.strptime(start_date, '%Y-%m-%d')
                 end_date = dt.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
                 readings = readings.filter(timestamp__range=[start_date, end_date])
             except ValueError:
-                return Response({'error': 'Invalid date format'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Invalid date format'}, status=400)
         elif date_filter == 'last_week':
             start_date = dt.now() - timedelta(days=7)
             end_date = dt.now()
@@ -680,15 +760,17 @@ class TariffExportView(APIView):
             end_date = dt.now()
             readings = readings.filter(timestamp__range=[start_date, end_date])
 
-        # Get tariff rate
+        # Get tariff and emission factor
         try:
             tariff = Tariff.objects.get(id=1)
             tariff_rate = tariff.rate
+            emission_factor = tariff.emission_factor
         except Tariff.DoesNotExist:
             tariff_rate = 0.0
+            emission_factor = 0.0
 
-        # Prepare data for Excel
         data = []
+
         if machine_id:
             kwh_readings = readings.filter(kwh__isnull=False).order_by('timestamp')
             if kwh_readings.exists():
@@ -696,10 +778,13 @@ class TariffExportView(APIView):
                 last_kwh = kwh_readings.last().kwh
                 total_kwh = last_kwh - first_kwh if first_kwh is not None and last_kwh is not None else 0
                 total_tariff = total_kwh * tariff_rate
+                total_emission = total_kwh * emission_factor
                 data.append({
                     'Machine Name': kwh_readings.first().machine.name,
-                    'Tariff Value': total_tariff if total_tariff is not None else 0,
-                    'Tariff Rate': tariff_rate
+                    'Tariff Value (₹)': round(total_tariff, 2),
+                    'Tariff Rate (₹/kWh)': tariff_rate,
+                    'kWh Consumed': round(total_kwh, 2),
+                    'CO2 Emission (kg)': round(total_emission, 2)
                 })
         else:
             machines = Machine.objects.all()
@@ -711,25 +796,33 @@ class TariffExportView(APIView):
                     last_kwh = machine_readings.last().kwh
                     total_kwh = last_kwh - first_kwh if first_kwh is not None and last_kwh is not None else 0
                     total_tariff = total_kwh * tariff_rate
+                    total_emission = total_kwh * emission_factor
                     data.append({
                         'Machine Name': machine.name,
-                        'Tariff Value': total_tariff if total_tariff is not None else 0,
-                        'Tariff Rate': tariff_rate
+                        'Tariff Value (₹)': round(total_tariff, 2),
+                        'Tariff Rate (₹/kWh)': tariff_rate,
+                        'kWh Consumed': round(total_kwh, 2),
+                        'CO2 Emission (kg)': round(total_emission, 2)
                     })
 
         # Create Excel file
-        df = pd.DataFrame(data, columns=['Machine Name', 'Tariff Value', 'Tariff Rate'])
+        df = pd.DataFrame(data, columns=[
+            'Machine Name',
+            'kWh Consumed',
+            'Tariff Rate (₹/kWh)',
+            'Tariff Value (₹)',
+            'CO2 Emission (kg)'
+        ])
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Tariff Report')
+            df.to_excel(writer, index=False, sheet_name='Tariff & Carbon Report')
 
-        # Prepare response
         output.seek(0)
         response = StreamingHttpResponse(
             output,
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-        response['Content-Disposition'] = 'attachment; filename="tariff_report.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename="tariff_carbon_report.xlsx"'
         return response
 
 def dashboard(request):

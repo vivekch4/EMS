@@ -101,5 +101,8 @@ class Alarm(models.Model):
 
 class Tariff(models.Model):
     rate = models.FloatField(default=0.0)
+    emission_factor = models.FloatField(default=0.82, help_text="kg CO₂ per kWh")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"Tariff Rate: {self.rate}, Emission Factor: {self.emission_factor}"

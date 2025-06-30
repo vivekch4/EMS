@@ -6,7 +6,7 @@
     <!-- Header Section -->
     <div class="flex justify-between items-center">
         <div>
-            <p class="text-blue-200/80">Set tariff rates and view machine tariff calculations</p>
+            <p class="text-blue-200/80">Set tariff and emission rates, view machine tariff and emission calculations</p>
         </div>
         <!-- Export Button -->
         <button id="exportBtn" class="group flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-emerald-400/40 hover:from-emerald-500 hover:to-green-400 focus:outline-none focus:ring-4 focus:ring-emerald-400/50">
@@ -17,7 +17,7 @@
         </button>
     </div>
 
-    <!-- Tariff Rate Input Section -->
+    <!-- Tariff and Emission Rate Input Section -->
     <div class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden">
         <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
         <div class="relative z-10 p-6">
@@ -27,7 +27,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h2 class="text-xl font-semibold text-white">Set Tariff Rate</h2>
+                <h2 class="text-xl font-semibold text-white">Set Tariff and Emission Rates</h2>
             </div>
             <form id="tariff-form" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -35,13 +35,17 @@
                         <label for="tariff_rate" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">Tariff Rate (per kWh)</label>
                         <input type="number" id="tariff_rate" name="tariff_rate" step="0.01" min="0" placeholder="Enter tariff rate" class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300" required>
                     </div>
+                    <div class="space-y-2">
+                        <label for="emission_factor" class="block text-sm font-semibold text-blue-100 uppercase tracking-wider">Emission Factor (kg CO2/kWh)</label>
+                        <input type="number" id="emission_factor" name="emission_factor" step="0.001" min="0" value="0.82" readonly class="w-full px-4 py-3 bg-slate-700/50 border border-blue-500/30 rounded-xl text-white placeholder-blue-300/60 backdrop-blur-sm focus:outline-none transition-all duration-300 cursor-not-allowed" title="Emission factor is fixed">
+                    </div>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="group flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-green-500/30 transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-400/40 hover:from-green-500 hover:to-emerald-400 focus:outline-none focus:ring-4 focus:ring-green-400/50">
                         <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        Set Tariff Rate
+                        Set Rates
                     </button>
                 </div>
             </form>
@@ -58,7 +62,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                     </svg>
                 </div>
-                <h2 class="text-xl font-semibold text-white">Tariff Report Filters</h2>
+                <h2 class="text-xl font-semibold text-white">Tariff and Emission Report Filters</h2>
             </div>
             <form id="report-form" class="space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -102,14 +106,14 @@
                         <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        Generate Tariff Report
+                        Generate Tariff and Emission Report
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Total Tariff Cost Section -->
+    <!-- Total Tariff and Emission Cost Section -->
     <div id="total-tariff-section" class="backdrop-blur-xl bg-slate-800/30 rounded-2xl border border-blue-500/20 shadow-2xl overflow-hidden hidden">
         <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-900/5 to-slate-900/10 backdrop-blur-xl pointer-events-none"></div>
         <div class="relative z-10 p-6">
@@ -117,7 +121,7 @@
                 <svg class="w-6 h-6 mr-2 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Total Tariff Cost
+                Total Tariff and Emission Costs
             </h2>
             <div id="total-tariff-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <!-- Dynamic content will be populated by JavaScript -->
@@ -131,7 +135,7 @@
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
             <div class="absolute inset-0 rounded-full border-2 border-blue-500/20"></div>
         </div>
-        <p class="text-blue-100 ml-4">Generating tariff report...</p>
+        <p class="text-blue-100 ml-4">Generating tariff and emission report...</p>
     </div>
 
     <!-- Empty State -->
@@ -142,7 +146,7 @@
             </svg>
         </div>
         <h3 class="text-xl font-semibold text-white mb-2">No Data Available</h3>
-        <p class="text-blue-200/80">Configure your filters and generate a tariff report to view calculations.</p>
+        <p class="text-blue-200/80">Configure your filters and generate a tariff and emission report to view calculations.</p>
     </div>
 
     <!-- No Results State -->
@@ -153,12 +157,34 @@
             </svg>
         </div>
         <h3 class="text-xl font-semibold text-white mb-2">No Records Found</h3>
-        <p class="text-blue-200/80">No tariff records match your selected criteria. Try adjusting your filters.</p>
+        <p class="text-blue-200/80">No tariff or emission records match your selected criteria. Try adjusting your filters.</p>
     </div>
 </div>
 
 <script>
     const token = window.authToken || localStorage.getItem('token');
+
+    async function loadTariffData() {
+        try {
+            const response = await fetch('/tariff/set/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch tariff data');
+            }
+            const data = await response.json();
+            document.getElementById('tariff_rate').value = data.rate || 0.0;
+            document.getElementById('emission_factor').value = data.emission_factor || 0.82;
+        } catch (error) {
+            console.error('Error loading tariff data:', error);
+            document.getElementById('tariff_rate').value = 0.0;
+            document.getElementById('emission_factor').value = 0.82;
+        }
+    }
 
     async function loadMachines() {
         try {
@@ -216,7 +242,7 @@
     customRadio.addEventListener('change', updateDateOptions);
     updateDateOptions();
 
-    function renderTotalTariff(totalTariff, machineId) {
+    function renderTotalTariff(totalTariff, totalEmission, machineId) {
         const container = document.getElementById('total-tariff-container');
         container.innerHTML = '';
         if (machineId) {
@@ -224,18 +250,21 @@
             div.className = 'p-4 bg-blue-600/20 rounded-lg border border-blue-500/30';
             div.innerHTML = `
                 <p class="text-blue-100 text-sm uppercase tracking-wider">Selected Machine</p>
-                <p class="text-2xl font-bold text-white">${totalTariff !== null ? totalTariff.toFixed(2) : '0.00'}</p>
+                <p class="text-2xl font-bold text-white">Tariff: ₹${totalTariff !== null ? totalTariff.toFixed(2) : '0.00'}</p>
+                <p class="text-lg text-blue-200">Emission: ${totalEmission !== null ? totalEmission.toFixed(2) : '0.00'} kg CO2</p>
             `;
             container.className = 'grid grid-cols-1 gap-4';
             container.appendChild(div);
         } else {
             container.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
             for (const [machineName, tariff] of Object.entries(totalTariff)) {
+                const emission = totalEmission[machineName];
                 const div = document.createElement('div');
                 div.className = 'p-4 bg-blue-600/20 rounded-lg border border-blue-500/30';
                 div.innerHTML = `
                     <p class="text-blue-100 text-sm uppercase tracking-wider">${machineName}</p>
-                    <p class="text-2xl font-bold text-white">${tariff !== null ? tariff.toFixed(2) : '0.00'}</p>
+                    <p class="text-2xl font-bold text-white">Tariff: ₹${tariff !== null ? tariff.toFixed(2) : '0.00'}</p>
+                    <p class="text-lg text-blue-200">Emission: ${emission !== null ? emission.toFixed(2) : '0.00'} kg CO2</p>
                 `;
                 container.appendChild(div);
             }
@@ -256,15 +285,18 @@
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ rate: parseFloat(tariffRate) })
+                body: JSON.stringify({ 
+                    rate: parseFloat(tariffRate)
+                })
             });
             if (!response.ok) {
-                throw new Error('Failed to set tariff rate');
+                throw new Error('Failed to set rates');
             }
             alert('Tariff rate set successfully.');
+            await loadTariffData(); // Refresh the tariff data after setting
         } catch (error) {
-            console.error('Error setting tariff rate:', error);
-            alert('Failed to set tariff rate. Please try again.');
+            console.error('Error setting rates:', error);
+            alert('Failed to set rates. Please try again.');
         }
     });
 
@@ -307,7 +339,7 @@
                 }
             });
             if (!response.ok) {
-                throw new Error('Failed to fetch tariff report');
+                throw new Error('Failed to fetch tariff and emission report');
             }
             const data = await response.json();
             loadingState.classList.add('hidden');
@@ -316,10 +348,10 @@
                 totalTariffSection.classList.add('hidden');
             } else {
                 totalTariffSection.classList.remove('hidden');
-                renderTotalTariff(data.total_tariff, machineId);
+                renderTotalTariff(data.total_tariff, data.total_co2_emission, machineId);
             }
         } catch (error) {
-            console.error('Error fetching tariff report:', error);
+            console.error('Error fetching tariff and emission report:', error);
             loadingState.classList.add('hidden');
             noResultsState.classList.remove('hidden');
             totalTariffSection.classList.add('hidden');
@@ -359,17 +391,20 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'tariff_report.xlsx';
+            a.download = 'tariff_emission_report.xlsx';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error exporting Excel:', error);
-            alert('Failed to export tariff report. Please try again.');
+            alert('Failed to export tariff and emission report. Please try again.');
         }
     });
 
-    window.onload = loadMachines;
+    window.onload = function() {
+        loadTariffData();
+        loadMachines();
+    };
 </script>
 {% endblock %}

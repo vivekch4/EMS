@@ -72,7 +72,7 @@
                         </button>
                         <span class="text-xs text-blue-200/60 px-2">Scroll to view more machines</span>
                         <button id="scrollRight" class="p-2 rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-white transition-colors" title="Scroll Right">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor/60" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
                         </button>
@@ -207,107 +207,106 @@
     let machineData = new Map(); // Store only latest readings for each machine
     let isFirstLoad = true;
     let currentPage = 1;
-    const pageSize = 8; // Show more items per page
-
-    // WebSocket connection
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/readings/');
+    const pageSize = 4; // Show only 4 items per page for KWh consumption
     // Auto-Scroll functionality
-let autoScrollInterval = null;
-let isAutoScrolling = false;
+    let autoScrollInterval = null;
+    let isAutoScrolling = false;
 
-function toggleAutoScroll() {
-    const container = document.querySelector('#machineGrid .overflow-x-auto');
-    const autoScrollBtn = document.getElementById('autoScrollToggle');
-    const autoScrollIcon = document.getElementById('autoScrollIcon');
+    function toggleAutoScroll() {
+        const container = document.querySelector('#machineGrid .overflow-x-auto');
+        const autoScrollBtn = document.getElementById('autoScrollToggle');
+        const autoScrollIcon = document.getElementById('autoScrollIcon');
 
-    if (!isAutoScrolling) {
-        // Start auto-scroll
-        isAutoScrolling = true;
-        autoScrollBtn.title = 'Pause Auto-Scroll';
-        autoScrollIcon.innerHTML = `
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        `; // Pause icon
+        if (!isAutoScrolling) {
+            // Start auto-scroll
+            isAutoScrolling = true;
+            autoScrollBtn.title = 'Pause Auto-Scroll';
+            autoScrollIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            `; // Pause icon
 
-        autoScrollInterval = setInterval(() => {
-            if (container.scrollLeft >= (container.scrollWidth - container.clientWidth)) {
-                // Reset to start when reaching the end
-                container.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                // Scroll right by 300px
-                container.scrollBy({ left: 300, behavior: 'smooth' });
-            }
-            updateScrollButtons();
-        }, 3000); // Scroll every 3 seconds
-    } else {
-        // Stop auto-scroll
-        isAutoScrolling = false;
-        autoScrollBtn.title = 'Start Auto-Scroll';
-        autoScrollIcon.innerHTML = `
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-        `; // Play icon
+            autoScrollInterval = setInterval(() => {
+                if (container.scrollLeft >= (container.scrollWidth - container.clientWidth - 1)) {
+                    // Reset to start when reaching the end
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    // Scroll right by 300px
+                    container.scrollBy({ left: 300, behavior: 'smooth' });
+                }
+                updateScrollButtons();
+            }, 3000); // Scroll every 3 seconds
+        } else {
+            // Stop auto-scroll
+            isAutoScrolling = false;
+            autoScrollBtn.title = 'Start Auto-Scroll';
+            autoScrollIcon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            `; // Play icon
 
-        clearInterval(autoScrollInterval);
-        autoScrollInterval = null;
+            clearInterval(autoScrollInterval);
+            autoScrollInterval = null;
+        }
     }
-}
 
-// Add event listener for auto-scroll toggle
-document.getElementById('autoScrollToggle').addEventListener('click', toggleAutoScroll);
-    
-    socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        console.log('Received data:', data);
-        
-        // Store only latest reading for each machine
-        machineData.set(data.machine_name, {
-            ...data,
-            timestamp: new Date(data.timestamp)
+    // Add event listener for auto-scroll toggle
+    document.getElementById('autoScrollToggle').addEventListener('click', toggleAutoScroll);
+
+    function loadMachineData() {
+        // Static machine data for 10 machines
+        const dummyData = [
+            { machine_name: 'Machine1', current: 5.5, voltage: 220, kwh: 10.25, timestamp: new Date() },
+            { machine_name: 'Machine2', current: 6.0, voltage: 230, kwh: 12.50, timestamp: new Date() },
+            { machine_name: 'Machine3', current: 4.8, voltage: 225, kwh: 8.75, timestamp: new Date() },
+            { machine_name: 'Machine4', current: 7.2, voltage: 240, kwh: 15.30, timestamp: new Date() },
+            { machine_name: 'Machine5', current: 5.8, voltage: 235, kwh: 11.80, timestamp: new Date() },
+            { machine_name: 'Machine6', current: 6.5, voltage: 228, kwh: 13.20, timestamp: new Date() },
+            { machine_name: 'Machine7', current: 4.5, voltage: 222, kwh: 9.40, timestamp: new Date() },
+            { machine_name: 'Machine8', current: 7.0, voltage: 238, kwh: 14.60, timestamp: new Date() },
+            { machine_name: 'Machine9', current: 5.2, voltage: 230, kwh: 10.90, timestamp: new Date() },
+            { machine_name: 'Machine10', current: 6.8, voltage: 245, kwh: 16.10, timestamp: new Date() }
+        ];
+
+        // Clear existing data and populate with static data
+        machineData.clear();
+        dummyData.forEach(data => {
+            machineData.set(data.machine_name, {
+                ...data,
+                timestamp: new Date(data.timestamp)
+            });
         });
-        
+
         updateMachineCards();
         updateLastUpdateTime();
-        
-        // Hide loading state after first message
+
+        // Hide loading state after first load
         if (isFirstLoad) {
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('machineGrid').classList.remove('hidden');
             isFirstLoad = false;
         }
-    };
-
-    socket.onclose = function(event) {
-        console.error('WebSocket closed:', event);
-        // Show reconnection status
-        const lastUpdate = document.getElementById('lastUpdate');
-        lastUpdate.textContent = 'Connection lost - attempting to reconnect...';
-        lastUpdate.className = 'text-red-300';
-    };
-
-    socket.onopen = function(event) {
-        console.log('WebSocket connected');
-    };
+    }
 
     function updateMachineCards() {
         const container = document.getElementById('machinesContainer');
         const machineGrid = document.getElementById('machineGrid');
         const emptyState = document.getElementById('emptyState');
-        
+
         if (machineData.size === 0) {
             machineGrid.classList.add('hidden');
             emptyState.classList.remove('hidden');
             return;
         }
-        
+
         machineGrid.classList.remove('hidden');
         emptyState.classList.add('hidden');
-        
+
         container.innerHTML = '';
-        
+
         machineData.forEach((data, machineName) => {
             const card = createMachineCard(data);
             container.appendChild(card);
         });
-        
+
         // Update scroll button visibility
         updateScrollButtons();
     }
@@ -315,7 +314,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
     function createMachineCard(data) {
         const card = document.createElement('div');
         card.className = 'bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-5 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 min-w-[300px] flex-shrink-0';
-        
+
         card.innerHTML = `
             <!-- Machine Header -->
             <div class="flex items-center justify-between mb-6">
@@ -371,7 +370,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
                     <div class="flex items-center">
                         <div class="flex items-center justify-center w-8 h-8 bg-teal-600 rounded-lg mr-3">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4 teacher's"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                             </svg>
                         </div>
                         <span class="text-sm font-medium text-teal-300">Energy</span>
@@ -380,7 +379,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
                 </div>
             </div>
         `;
-        
+
         return card;
     }
 
@@ -396,13 +395,15 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
         const container = document.querySelector('#machineGrid .overflow-x-auto');
         const scrollLeft = document.getElementById('scrollLeft');
         const scrollRight = document.getElementById('scrollRight');
-        
+
         if (container) {
             const canScrollLeft = container.scrollLeft > 0;
-            const canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
-            
+            const canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth - 1);
+
             scrollLeft.style.opacity = canScrollLeft ? '1' : '0.5';
             scrollRight.style.opacity = canScrollRight ? '1' : '0.5';
+            scrollLeft.disabled = !canScrollLeft;
+            scrollRight.disabled = !canScrollRight;
         }
     }
 
@@ -411,54 +412,63 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
         const scrollLeft = document.getElementById('scrollLeft');
         const scrollRight = document.getElementById('scrollRight');
         const container = document.querySelector('#machineGrid .overflow-x-auto');
-        
+
         scrollLeft.addEventListener('click', function() {
-            if (container) {
+            if (container && !scrollLeft.disabled) {
                 container.scrollBy({ left: -300, behavior: 'smooth' });
                 setTimeout(updateScrollButtons, 300);
             }
         });
-        
+
         scrollRight.addEventListener('click', function() {
-            if (container) {
+            if (container && !scrollRight.disabled) {
                 container.scrollBy({ left: 300, behavior: 'smooth' });
                 setTimeout(updateScrollButtons, 300);
             }
         });
-        
+
         // Update scroll buttons on scroll
         if (container) {
             container.addEventListener('scroll', updateScrollButtons);
         }
+
+        // Start auto-scrolling by default
+        toggleAutoScroll();
+
+        // Load static machine data
+        loadMachineData();
+
+        // Load KWh summary
+        loadKwhSummary(currentPage);
     });
 
     // KWh Summary Functions
     async function loadKwhSummary(page = 1) {
-        const token = localStorage.getItem('token');
-        const headers = {
-            'Content-Type': 'application/json',
+        const kwhData = {
+            count: 10,
+            next: page < 3 ? 'next' : null,
+            previous: page > 1 ? 'previous' : null,
+            results: [
+                { machine_name: 'Machine1', kwh_consumed: 65.75 },
+                { machine_name: 'Machine2', kwh_consumed: 78.20 },
+                { machine_name: 'Machine3', kwh_consumed: 52.40 },
+                { machine_name: 'Machine4', kwh_consumed: 90.10 },
+                { machine_name: 'Machine5', kwh_consumed: 45.30 },
+                { machine_name: 'Machine6', kwh_consumed: 72.80 },
+                { machine_name: 'Machine7', kwh_consumed: 60.15 },
+                { machine_name: 'Machine8', kwh_consumed: 85.45 },
+                { machine_name: 'Machine9', kwh_consumed: 50.60 },
+                { machine_name: 'Machine10', kwh_consumed: 88.25 }
+            ].slice((page - 1) * pageSize, page * pageSize)
         };
-        if (token) {
-            headers['Authorization'] = 'Bearer ' + token;
-        }
 
         try {
-            const response = await fetch(`/kwh-summary/?page=${page}&page_size=${pageSize}`, {
-                method: 'GET',
-                headers: headers,
-            });
+            displayKwhData(kwhData);
 
-            if (!response.ok) {
-                throw new Error('Failed to load KWh data');
-            }
-
-            const data = await response.json();
-            displayKwhData(data);
-            
             // Hide loading state
             document.getElementById('kwhLoadingState').classList.add('hidden');
             document.getElementById('kwhContainer').classList.remove('hidden');
-            
+
         } catch (error) {
             console.error('Error loading KWh summary:', error);
             // Show error state
@@ -478,7 +488,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
     function displayKwhData(data) {
         const container = document.getElementById('kwhContainer');
         container.innerHTML = '';
-    
+
         if (!data.results || data.results.length === 0) {
             container.innerHTML = `
                 <div class="text-center py-8">
@@ -492,7 +502,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
             `;
             return;
         }
-    
+
         data.results.forEach(machine => {
             const div = document.createElement('div');
             div.className = 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-4 rounded-lg border border-green-500/20 hover:border-green-400/30 transition-colors';
@@ -517,7 +527,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
             `;
             container.appendChild(div);
         });
-    
+
         // Update pagination
         updatePagination(data);
     }
@@ -530,15 +540,15 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
 
         if (data.count > pageSize) {
             paginationControls.style.display = 'flex';
-            
+
             // Calculate page info
             const totalPages = Math.ceil(data.count / pageSize);
             pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-            
+
             // Update button states
             prevBtn.disabled = !data.previous;
             nextBtn.disabled = !data.next;
-            
+
             // Update click handlers
             prevBtn.onclick = () => {
                 if (data.previous) {
@@ -546,7 +556,7 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
                     loadKwhSummary(currentPage);
                 }
             };
-            
+
             nextBtn.onclick = () => {
                 if (data.next) {
                     currentPage++;
@@ -557,16 +567,5 @@ document.getElementById('autoScrollToggle').addEventListener('click', toggleAuto
             paginationControls.style.display = 'none';
         }
     }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        // Show loading states initially
-        document.getElementById('loadingState').classList.remove('hidden');
-        document.getElementById('machineGrid').classList.add('hidden');
-        document.getElementById('emptyState').classList.add('hidden');
-        
-        // Load KWh summary
-        loadKwhSummary(currentPage);
-    });
 </script>
 {% endblock %}
